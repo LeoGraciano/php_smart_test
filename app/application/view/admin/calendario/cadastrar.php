@@ -151,11 +151,10 @@ require APP . 'view/admin/_templates/endFile.php';
         array_push($events, array(
             "id"=>$obj['id'],
             "start"=>$obj["data_agendamento"],
-            "title"=>$obj["titulo"],
-            "status"=>$obj["status"],
+            "title"=>"Teste de titulo",
+            "status"=>1,
         ));
     };
-    
     print_r($events);
 ?>
 <script>

@@ -27,6 +27,21 @@ class CalendarioController
         Helper::view($this->baseView.'/edit',$response);
     }
 
+    public function create()
+    {
+        $model = New Calendario();
+        if ($_POST['titulo']){
+            if ($_POST['status'] == "on") {
+                $_POST['status'] = 1 ;
+            } else { 
+                $_POST['status'] = 0;
+            }
+
+            $model->create($this->table,$_POST, []);
+        }
+        header('location: ' . URL_ADMIN . '/' . $this->urlIndex);
+    }
+
 
     public function update()
     {

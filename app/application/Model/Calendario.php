@@ -20,13 +20,13 @@ class Calendario extends Model
         return $query->fetchAll();
     }
 
-  public function createCalendar($user, $date, $task, $user_id)
+  public function createCalendar($date, $title, $id_update_user)
 
     {
         $sql = "
-        INSERT INTO `calendario` (usuario, data_agendamento, tarefa, user_id)
+        INSERT INTO `calendario` (data_agendamento, titulo, id_update_user)
         VALUES (
-          '{$user}', '{$date}' , '{$task}', '{$user_id}'
+          '{$date}' , '{$title}, '{$id_update_user}'
         );
         ";
         $query = $this->PDO()->prepare($sql);
@@ -34,14 +34,13 @@ class Calendario extends Model
         return $query->fetchAll();
     }
 
-    public function updateCalendar($id, $user, $date, $task, $user_id)
+    public function updateCalendar($id, $user, $date, $title, $user_id)
       {
           $sql = "
             UPDATE calendrio
-            SET usuario = '{$user}'
             SET data_agendamento = '{$date}'
-            SET tarefa = '{$task}'
-            SET user_id = '{$user_id}'
+            SET titulo = '{$title}'
+            SET id_update_user = '{$user_id}'
             where id = {$id}; 
           ";
           $query = $this->PDO()->prepare($sql);

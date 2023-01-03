@@ -1,7 +1,7 @@
 <?php
 define('DB_TYPE', 'mysql');
 define('DB_HOST', 'localhost');
-define('DB_PORT', '3307');
+define('DB_PORT', '3306');
 define('DB_NAME', 'db_test_crud');
 define('DB_USER', 'user_test');
 define('DB_PASS', '123');
