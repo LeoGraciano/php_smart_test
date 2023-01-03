@@ -8,8 +8,8 @@ $css = [
     
 ];
 $script = [
-    "assets/admin/js/plugins/fullcalendar/moment.min.js",
     "assets/admin/js/plugins/jquery-ui/jquery-ui.min.js",
+    "assets/admin/js/plugins/fullcalendar/moment.min.js",
     "assets/admin/js/plugins/iCheck/icheck.min.js",
     "assets/admin/js/plugins/fullcalendar/fullcalendar.min.js",
 
@@ -109,15 +109,10 @@ require APP . 'view/admin/_templates/initFile.php';
 require APP . 'view/admin/_templates/endFile.php';
 ?>
 
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#calendarModal">
-  Launch demo modal
-</button>
-
 <!-- Modal -->
 <div class="modal fade" id="calendarModal" tabindex="-1" role="dialog" aria-labelledby="calendarModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-    <form action="<?=URL_ADMIN ?>/calendario/cadastrar" method="post">
+    <form action="<?=URL_ADMIN ?>/calendario/cadastrar" method="post" id="form-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="calendarModalLabel"></h5>
@@ -126,37 +121,49 @@ require APP . 'view/admin/_templates/endFile.php';
                 </button>
             </div>
             <div class="modal-body">
-                
+
                     <label for="id_titulo">Titulo</label>
                     <input type="text" name="titulo" id="id_titulo" class="form-control" required>
                     <br>
+                    <label for="id_data_agendamento" hidden>Data</label>
                     <input type="hidden" name="data_agendamento" id="id_data_agendamento" class="form-control" required>
                     <input type="checkbox" name="status" id="id_status" checked> <label for="id_status">Ativo</label>
-                    
-                
             </div>
             <div class="modal-footer">
+                <a href="#" class="btn btn-danger hidden" id="btn-delete">Deletar</a>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Criar</button>
+                <button type="submit" class="btn btn-primary" id="button_modal">Criar</button>
             </div>
         </div>
     </form>
   </div>
 </div>
 
+
 <?php 
     $events = array();
 
     foreach ($response as $obj) {
+        $obj["textColor"] = "dark !important";
+
+        if ($obj["status"]  == 1){
+            $obj["backgroundColor"] = "yellow !important";
+            
+        } else {
+            $obj["backgroundColor"] = "red !important";
+            $obj["textColor"] = "white important";
+        };
+
         array_push($events, array(
             "id"=>$obj['id'],
             "start"=>$obj["data_agendamento"],
             "title"=>$obj["titulo"],
             "status"=>$obj["status"],
+            "backgroundColor"=>$obj["backgroundColor"],
+            "textColor"=>$obj["textColor"],
         ));
     };
-    
-    print_r($events);
+    echo json_encode($events);
 ?>
 <script>
     $(document).ready(function () {
@@ -194,8 +201,33 @@ require APP . 'view/admin/_templates/endFile.php';
         var m = date.getMonth();
         var y = date.getFullYear();
 
-        $('#calendar').fullCalendar({
+        var calendar = $('#calendar').fullCalendar({
+            eventClick: function(calEvent, jsEvent, view) {
 
+
+
+                dt = calEvent.start._i
+
+                $("#form-modal").prop('action', "<?=URL_ADMIN ?>/calendario/edit/")
+                $('#calendarModalLabel').text("Data : " + dt)
+
+                $('#id_data_agendamento').val(dt);
+                $('label[for*=id_data_agendamento]').prop('hidden',false);
+                $('a#btn-delete').removeClass('hidden');
+                $('a#btn-delete').prop('href', `<?=URL_ADMIN ?>/calendario/remover/${calEvent.id}`);
+                $('#id_data_agendamento').prop('type', 'text');
+
+                $('#id_titulo').val(calEvent.title)
+
+                if (calEvent.status != 1){
+                    $('#id_status').prop('checked', false)
+                }
+
+                $('#button_modal').text('Atualizar')
+                $('#calendarModal').modal({ show: true})
+
+
+            },
             header: {
                 locale: 'pt',
                 left: 'prev,next today',
@@ -211,9 +243,9 @@ require APP . 'view/admin/_templates/endFile.php';
                     $(this).remove();
                 }
             },
+
             events:<?php echo json_encode($events);?> 
         });
-
 
     });
 </script>
@@ -222,11 +254,14 @@ require APP . 'view/admin/_templates/endFile.php';
 $(document).ready(function () {
 
     var task = function(){
-        console.log(this)
-        console.log($(this).attr('data-date'))
-        // $('#calendarModalLabel').prop(this['data-date'])
-        $('#calendarModalLabel').text($(this).attr('data-date'))
+        $("#form-modal").prop('action', "<?=URL_ADMIN ?>/calendario/cadastrar")
+        $('#calendarModalLabel').text("Data : " +$(this).attr('data-date'))
         $('#id_data_agendamento').val($(this).attr('data-date'))
+        $('#id_data_agendamento').prop('type', 'hidden');
+        $('label[for*=id_data_agendamento]').prop('hidden',true);
+        $('#button_modal').text('Criar')
+        $('a#btn-delete').addClass('hidden');
+        $('a#btn-delete').prop('href', `#`);
         $('#calendarModal').modal({ show: true})
         
         

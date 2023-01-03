@@ -46,15 +46,21 @@ class CalendarioController
     public function update()
     {
         $model = New Calendario();
-        if(@$_SESSION['acesso'] == 'Administrador') $_POST['id_update_user'] = $_SESSION['id_user'];
-        if($model->save($this->table,$_POST,['image'])) {
-            header('location: ' . URL_ADMIN . '/' . $this->urlIndex);
-        } else {
-            Helper::view($this->baseView.'/edit/'.$_POST['id']);
+        if ($_POST['status'] == "on") {
+                $_POST['status'] = 1 ;
+            } else { 
+                $_POST['status'] = 0;
         }
+        $model->save($this->table, $_POST, []);
+        header('location: ' . URL_ADMIN . '/' . $this->urlIndex);
     }
 
-    
+    public function delete($param)
+    {
+        $model = New Calendario();
+        $model->delete($this->table,'id', $param['id']);
+        header('location: ' . URL_ADMIN . '/' . $this->urlIndex);
+    }
 
 }
 
